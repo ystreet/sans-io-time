@@ -12,7 +12,32 @@
 
 //! # sans-io-time
 //!
-//! Represent time as an abstract value based on an arbitrary point in a (user-provided) timeline.
+//! Represent time as an abstract absolute value based on an arbitrary start point in a
+//! (user-provided) timeline.
+//!
+//! ## Why?
+//!
+//! 1. `no_std` environments may require an implementation of `Instant` and may require
+//!    leaving the implementation details to the implementor.
+//! 2. Network protocols may require that time continues during suspend of the OS
+//!    which is not something that is guaranteed by `std::time::Instant`.
+//! 3. Other uses of `std::time::Instant` should not count time during suspend e.g.
+//!    CPU process time, or process uptime.
+//!
+//! The `Instant`  type provided by this crate satisfies all of these constraints by
+//! only specifying the carriage of data. It does not specify how the current time
+//! is acquired or whether time continues during suspend. Both of these questions
+//! are required to be answered (or left unspecified) by the caller by either using
+//! `std::time::Instant` or `std::time::SystemTime` (with the "std" feature), or
+//! converting from another source of time like
+//! [boot-time](https://crates.io/crates/boot-time).
+//!
+//! In a sans-IO library, the decision on the exact clock source can be decided by the
+//! user of the library rather than specifying a particular `Instant` implementation.
+//!
+//! ## Features
+//! - "std" (snabled by default) enabled conversion from `std::time::Instant` and
+//!   `std::time::SystemTime` into an [`Instant`].
 
 #[cfg(feature = "std")]
 extern crate std;

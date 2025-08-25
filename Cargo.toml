@@ -1,12 +1,12 @@
 [package]
 name = "sans-io-time"
-description = "Time structures for a sans-io pattern"
+description = "Time structures for the sans-io pattern"
 version = "0.1.0"
 edition = "2024"
 authors = ["Matthew Waters <matthew@centricular.com>"]
 license = "MIT OR Apache-2.0"
 keywords = ["sans-io", "time"]
-categories = ["date-and-time", ]
+categories = ["date-and-time", "no-std"]
 documentation = "https://docs.rs/sans-io-time"
 repository = "https://github.com/ystreet/sans-io-time"
 
