@@ -2,15 +2,14 @@
 name = "sans-io-time"
 description = "Time structures for the sans-io pattern"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 authors = ["Matthew Waters <matthew@centricular.com>"]
 license = "MIT"
 keywords = ["sans-io", "time"]
 categories = ["date-and-time", "no-std"]
 documentation = "https://docs.rs/sans-io-time"
 repository = "https://github.com/ystreet/sans-io-time"
-
-[dependencies]
+rust-version = "1.56.0"
 
 [features]
 default = ["std"]
