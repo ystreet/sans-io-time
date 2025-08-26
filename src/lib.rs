@@ -226,7 +226,24 @@ impl Instant {
 
 impl core::fmt::Display for Instant {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}.{:0>3}s", self.secs(), self.subsec_nanos())
+        let secs = self.secs();
+        let nanos = self.subsec_nanos();
+        if secs != 0 {
+            write!(f, "{}", secs)?;
+            if nanos != 0 {
+                write!(f, ".{:0>9}", nanos.abs())?;
+            }
+            write!(f, "s")
+        } else if nanos != 0 {
+            if nanos < 0 {
+                write!(f, "-")?;
+            }
+            let millis = nanos.abs() / 1_000_000;
+            let millis_rem = nanos.abs() % 1_000_000;
+            write!(f, "{}.{:0>6}ms", millis, millis_rem)
+        } else {
+            write!(f, "0s")
+        }
     }
 }
 
@@ -273,6 +290,8 @@ impl core::ops::Sub<Instant> for Instant {
 mod tests {
     use super::*;
 
+    extern crate alloc;
+
     #[test]
     fn add() {
         let base = Instant::from_nanos(1_222_333_444);
@@ -304,5 +323,39 @@ mod tests {
         assert_eq!(later - earlier, Duration::from_nanos(1_111_111_111));
         assert_eq!(earlier - later, Duration::ZERO);
         assert_eq!(earlier - earlier, Duration::ZERO);
+    }
+
+    #[test]
+    fn display() {
+        assert_eq!(&alloc::format!("{}", Instant::ZERO), "0s");
+        assert_eq!(&alloc::format!("{}", Instant::from_nanos(1)), "0.000001ms");
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(-1)),
+            "-0.000001ms"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(1_000_000_000)),
+            "1s"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(1_000_000_001)),
+            "1.000000001s"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(1_100_000_000)),
+            "1.100000000s"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(-1_000_000_000)),
+            "-1s"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(-1_000_000_001)),
+            "-1.000000001s"
+        );
+        assert_eq!(
+            &alloc::format!("{}", Instant::from_nanos(-1_100_000_000)),
+            "-1.100000000s"
+        );
     }
 }
