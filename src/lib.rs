@@ -198,7 +198,7 @@ impl Instant {
         }
     }
 
-    /// Construct an [`Instant`] from a `std::time::System` based on the distance from the unix
+    /// Construct an [`Instant`] from a `std::time::SystemTime` based on the distance from the unix
     /// epoch.
     ///
     /// # Example
@@ -206,9 +206,8 @@ impl Instant {
     /// ```
     /// # use sans_io_time::Instant;
     /// # use core::time::Duration;
-    /// let std_instant = std::time::Instant::now();
-    /// std::thread::sleep(Duration::from_secs(1));
-    /// assert!(Instant::from_std(std_instant) >= Instant::from_nanos(1_000_000_000));
+    /// let sys_time = std::time::SystemTime::now();
+    /// assert!(Instant::from_system(sys_time) >= Instant::from_nanos(0));
     /// ```
     #[cfg(feature = "std")]
     pub fn from_system(sys_time: ::std::time::SystemTime) -> Self {
