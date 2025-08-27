@@ -1,7 +1,7 @@
 # sans-io-time
 
 Represent time as an abstract absolute value based on an arbitrary start point
-in a (user-provided timeline.
+in a user-provided timeline.
 
 ## Why?
 
