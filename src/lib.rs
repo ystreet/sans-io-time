@@ -36,7 +36,7 @@
 //! user of the library rather than specifying a particular `Instant` implementation.
 //!
 //! ## Features
-//! - "std" (snabled by default) enabled conversion from `std::time::Instant` and
+//! - "std" (enabled by default) enables conversion from `std::time::Instant` and
 //!   `std::time::SystemTime` into an [`Instant`].
 
 #[cfg(feature = "std")]
