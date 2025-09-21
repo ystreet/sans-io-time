@@ -221,6 +221,60 @@ impl Instant {
                 .expect("Elapsed time too large to fit into Instant"),
         }
     }
+
+    /// Convert this [`Instant`] to a `std::time::Instant` using a base instant.
+    ///
+    /// This function takes a base `std::time::Instant` and adds the duration represented
+    /// by this [`Instant`] to create a corresponding `std::time::Instant`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use sans_io_time::Instant;
+    /// # use core::time::Duration;
+    /// let base = std::time::Instant::now();
+    /// let instant = Instant::from_nanos(1_000_000_000); // 1 second
+    /// let std_instant = instant.to_std(base);
+    ///
+    /// // The resulting std_instant should be 1 second after base
+    /// assert!(std_instant.duration_since(base) == Duration::from_secs(1));
+    /// ```
+    #[cfg(feature = "std")]
+    pub fn to_std(&self, base_instant: ::std::time::Instant) -> ::std::time::Instant {
+        let duration_since = ::core::time::Duration::from_nanos(
+            self.nanos
+                .try_into()
+                .expect("Elapsed time too large to fit into Duration"),
+        );
+        base_instant + duration_since
+    }
+
+    /// Convert this [`Instant`] to a `std::time::SystemTime` using a base system time.
+    ///
+    /// This function takes a base `std::time::SystemTime` and adds the duration represented
+    /// by this [`Instant`] to create a corresponding `std::time::SystemTime`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use sans_io_time::Instant;
+    /// # use core::time::Duration;
+    /// let base = std::time::SystemTime::now();
+    /// let instant = Instant::from_nanos(1_000_000_000); // 1 second
+    /// let sys_time = instant.to_system(base);
+    ///
+    /// // The resulting sys_time should be 1 second after base
+    /// assert!(sys_time.duration_since(base).unwrap() == Duration::from_secs(1));
+    /// ```
+    #[cfg(feature = "std")]
+    pub fn to_system(&self, base_system_time: ::std::time::SystemTime) -> ::std::time::SystemTime {
+        let duration_since = ::core::time::Duration::from_nanos(
+            self.nanos
+                .try_into()
+                .expect("Elapsed time too large to fit into Duration"),
+        );
+        base_system_time + duration_since
+    }
 }
 
 impl core::fmt::Display for Instant {
@@ -274,7 +328,7 @@ impl core::ops::SubAssign<Duration> for Instant {
     fn sub_assign(&mut self, rhs: Duration) {
         *self = self
             .checked_sub(rhs)
-            .expect("Duration too large to fit into Instant")
+            .expect("Duration too large to fit into Instant");
     }
 }
 
