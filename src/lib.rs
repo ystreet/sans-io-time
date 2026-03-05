@@ -174,10 +174,13 @@ impl Instant {
         Some(Self { nanos })
     }
 
-    /// Construct an [`Instant`] from a `std::time::Instant` based its the elapsed time.
+    /// Construct an [`Instant`] from a `std::time::Instant` based on its the elapsed time.
     ///
     /// Can be used if you have a base `std::time::Instant` where you can create [`Instant`]s as
     /// needed.
+    ///
+    /// In this usage, the base `std::time::Instant` is mapped to `Instant::ZERO` and [`Instant`]
+    /// values represent the distance from the base `std::time::Instant`.
     ///
     /// # Example
     ///
@@ -201,6 +204,9 @@ impl Instant {
 
     /// Construct an [`Instant`] from a `std::time::SystemTime` based on the distance from the unix
     /// epoch.
+    ///
+    /// In this usage, the base `std::time::UNIX_EPOCH` is mapped to `Instant::ZERO` and [`Instant`]
+    /// values represent the distance from the base `std::time::UNIX_EPOCH`.
     ///
     /// # Example
     ///
@@ -228,6 +234,9 @@ impl Instant {
     /// This function takes a base `std::time::Instant` and adds the duration represented
     /// by this [`Instant`] to create a corresponding `std::time::Instant`.
     ///
+    /// In this usage, the base `std::time::Instant` is mapped to `Instant::ZERO` and [`Instant`]
+    /// values represent the distance from the base `std::time::Instant`.
+    ///
     /// # Example
     ///
     /// ```
@@ -254,6 +263,10 @@ impl Instant {
     ///
     /// This function takes a base `std::time::SystemTime` and adds the duration represented
     /// by this [`Instant`] to create a corresponding `std::time::SystemTime`.
+    ///
+    /// If the [`Instant`] was created with [`Instant::from_system_unix_epoch`] then the base
+    /// `std::time::SystemTime` should be `std::time::UNIX_EPOCH`. Otherwise, the base
+    /// `std::time::SystemTime` should be the same value passed in to [`Instant::from_system`].
     ///
     /// # Example
     ///
