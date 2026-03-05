@@ -202,6 +202,36 @@ impl Instant {
         }
     }
 
+    /// Construct an [`Instant`] from a `std::time::SystemTime` based on its the elapsed time.
+    ///
+    /// Can be used if you have a base `std::time::SystemTime` where you can create [`Instant`]s as
+    /// needed.
+    ///
+    /// In this usage, the base `std::time::SystemTime` is mapped to `Instant::ZERO` and [`Instant`]
+    /// values represent the distance from the base `std::time::SystemTime`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use sans_io_time::Instant;
+    /// # use core::time::Duration;
+    /// let sys_time = std::time::SystemTime::now();
+    /// std::thread::sleep(Duration::from_secs(1));
+    /// assert!(Instant::from_system_elapsed(sys_time).unwrap() >= Instant::from_nanos(1_000_000_000));
+    /// ```
+    #[cfg(feature = "std")]
+    pub fn from_system_elapsed(
+        sys_time: ::std::time::SystemTime,
+    ) -> Result<Self, std::time::SystemTimeError> {
+        let dur = sys_time.elapsed()?;
+        Ok(Self {
+            nanos: dur
+                .as_nanos()
+                .try_into()
+                .expect("Elapsed time too large to fit into Instant"),
+        })
+    }
+
     /// Construct an [`Instant`] from a `std::time::SystemTime` based on the distance from the unix
     /// epoch.
     ///
@@ -214,10 +244,10 @@ impl Instant {
     /// # use sans_io_time::Instant;
     /// # use core::time::Duration;
     /// let sys_time = std::time::SystemTime::now();
-    /// assert!(Instant::from_system(sys_time) >= Instant::from_nanos(0));
+    /// assert!(Instant::from_system_unix_epoch(sys_time) >= Instant::from_nanos(0));
     /// ```
     #[cfg(feature = "std")]
-    pub fn from_system(sys_time: ::std::time::SystemTime) -> Self {
+    pub fn from_system_unix_epoch(sys_time: ::std::time::SystemTime) -> Self {
         let dur = sys_time
             .duration_since(::std::time::UNIX_EPOCH)
             .expect("start time must not be before the unix epoch");
@@ -266,7 +296,8 @@ impl Instant {
     ///
     /// If the [`Instant`] was created with [`Instant::from_system_unix_epoch`] then the base
     /// `std::time::SystemTime` should be `std::time::UNIX_EPOCH`. Otherwise, the base
-    /// `std::time::SystemTime` should be the same value passed in to [`Instant::from_system`].
+    /// `std::time::SystemTime` should be the same value passed in to
+    /// [`Instant::from_system_elapsed`].
     ///
     /// # Example
     ///
